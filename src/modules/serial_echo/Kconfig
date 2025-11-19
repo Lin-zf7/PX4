@@ -1,0 +1,6 @@
+menuconfig MODULES_SERIAL_ECHO
+    bool "serial_echo"
+    default n
+    ---help---
+      Enable serial echo module (read input, write same data back)
+

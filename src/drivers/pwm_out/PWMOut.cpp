@@ -166,6 +166,49 @@ void PWMOut::Run()
 	perf_count(_interval_perf);
 
 	_mixing_output.update();
+// ==========================
+// 订阅 pwm_control 实时控制
+// ==========================
+pwm_control_s ctrl;
+
+if (_pwm_control_sub.update(&ctrl)) {
+
+    // port: 1~8 → index 要减 1
+    int ch = ctrl.port - 1;
+
+    if (ch >= 0 && ch < (int)_num_outputs) {
+
+        // 1) 更新频率（按 timer group 设置）
+        int timer = -1;
+
+// 遍历所有 timer，找到包含此通道的 timer group
+for (int t = 0; t < MAX_IO_TIMERS; t++) {
+    uint32_t group = up_pwm_servo_get_rate_group(t);  // timer t 管哪些通道
+    if (group & (1 << ch)) {  // 该 timer group 含当前 channel
+        timer = t;
+        break;
+    }
+}
+
+
+        if (timer >= 0 && timer < MAX_IO_TIMERS) {
+            up_pwm_servo_set_rate_group_update(timer, ctrl.frequency);
+            _timer_rates[timer] = ctrl.frequency;
+        }
+
+        // 2) duty → pwm 微秒 (0~1 → 1000~2000us，可以自己定义)
+	float pwm_T = 1000000 / ctrl.frequency ;
+        float pwm_us = pwm_T * ctrl.duty ;  // 1000~2000us
+
+        // 3) 设置 PWM
+        up_pwm_servo_set(ch, (uint16_t)pwm_us);
+
+        // 4) OneShot 类模式下触发更新
+        up_pwm_update(_pwm_mask);
+    }
+}
+
+
 
 	/* update PWM status if armed or if disarmed PWM values are set */
 	bool pwm_on = true;

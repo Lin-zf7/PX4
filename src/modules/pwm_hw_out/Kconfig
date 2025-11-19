@@ -1,0 +1,5 @@
+menuconfig MODULES_PWM_HW_OUT
+	bool "pwm_hw_out"
+	default n
+	---help---
+		Simple PWM out example module that toggles a PWM channel.

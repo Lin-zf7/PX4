@@ -169,6 +169,7 @@ set(msg_files
 	PpsCapture.msg
 	PurePursuitStatus.msg
 	PwmInput.msg
+	pwm_control.msg
 	Px4ioStatus.msg
 	QshellReq.msg
 	QshellRetval.msg

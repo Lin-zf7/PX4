@@ -620,6 +620,11 @@ else
 		. ${R}etc/init.d/rc.autostart.post
 	fi
 
+	sleep 5
+
+	# 启动serial_app，并放后台运行，防止阻塞
+	#pwm_hw_out start
+	#serial_echo start &
 
 	set BOARD_BOOTLOADER_UPGRADE ${R}etc/init.d/rc.board_bootloader_upgrade
 	if [ -f $BOARD_BOOTLOADER_UPGRADE ]

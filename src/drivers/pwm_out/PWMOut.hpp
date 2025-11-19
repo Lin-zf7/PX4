@@ -50,6 +50,8 @@
 #include <px4_platform_common/module.h>
 #include <uORB/Subscription.hpp>
 #include <uORB/topics/parameter_update.h>
+#include <uORB/topics/pwm_control.h>
+
 
 using namespace time_literals;
 
@@ -92,7 +94,8 @@ private:
 	uint32_t	_pwm_mask{0};
 	bool		_pwm_initialized{false};
 	bool		_first_update_cycle{true};
-
+	uint16_t _override_pwm_values[MAX_ACTUATORS]{0};
 	perf_counter_t	_cycle_perf{perf_alloc(PC_ELAPSED, MODULE_NAME": cycle")};
 	perf_counter_t	_interval_perf{perf_alloc(PC_INTERVAL, MODULE_NAME": interval")};
+	uORB::Subscription _pwm_control_sub{ORB_ID(pwm_control)};
 };
